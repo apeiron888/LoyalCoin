@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { QrCode, Send, ArrowDownLeft, ArrowUpRight, RefreshCw } from 'lucide-react';
 import { useStore } from '../store';
