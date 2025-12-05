@@ -1,0 +1,33 @@
+# Backend
+backend/.env
+backend/keys/*.pem
+backend/tmp/
+
+# Frontend
+
+
+# Mobile
+
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+docker-compose.override.yml
+
+# Secrets
+*.key
+*.pem
+!*.example
