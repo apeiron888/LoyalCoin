@@ -1,0 +1,52 @@
+# Git
+.git
+.gitignore
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Build artifacts
+auth-service
+mint-lcn
+*.exe
+*.test
+*.out
+coverage.out
+
+# Test files
+*_test.go
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Keys (should be managed via secrets)
+keys/*.pem
+*.key
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+docs/
+
+# Scripts (optional, include if they're needed in production)
+scripts/
+
+# Debug files
+debug_wallet.go

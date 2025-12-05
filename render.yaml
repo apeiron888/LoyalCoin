@@ -1,0 +1,97 @@
+services:
+  # Backend API Service
+  - type: web
+    name: loyalcoin-api
+    env: go
+    region: frankfurt # Change to closest region: oregon, frankfurt, singapore
+    plan: free # Options: free, starter ($7/mo), standard ($25/mo)
+    buildCommand: cd backend && go build -o main ./cmd/auth-service
+    startCommand: cd backend && ./main
+    healthCheckPath: /health
+    envVars:
+      # Server Configuration
+      - key: PORT
+        value: 8080
+      - key: GIN_MODE
+        value: release
+      
+      # Network Configuration
+      - key: NETWORK
+        value: preprod # cardano-preprod or cardano-mainnet
+      
+      # Database & Cache (Set these in Render Dashboard - they're sensitive!)
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      
+      # Vault Configuration (Set in Dashboard)
+      - key: VAULT_ADDR
+        sync: false
+      - key: VAULT_TOKEN
+        sync: false
+      
+      # Blockfrost API (Get free API key from blockfrost.io)
+      - key: BLOCKFROST_PROJECT_ID
+        sync: false
+      - key: BLOCKFROST_API_URL
+        value: https://cardano-preprod.blockfrost.io/api/v0
+      
+      # JWT Keys (Generate with OpenSSL and add as secret files)
+      - key: JWT_PRIVATE_KEY_PATH
+        value: /etc/secrets/jwt_private.pem
+      - key: JWT_PUBLIC_KEY_PATH
+        value: /etc/secrets/jwt_public.pem
+      
+      # Governance Wallet (Set in Dashboard)
+      - key: GOVERNANCE_WALLET_ADDRESS
+        sync: false
+      
+      # Admin Configuration
+      - key: ADMIN_EMAIL
+        sync: false
+      
+      # CORS Origins (Update after deploying frontends)
+      - key: ALLOWED_ORIGINS
+        value: https://loyalcoin-customer-portal.vercel.app,https://loyalcoin-merchant-portal.vercel.app,https://loyalcoin-admin-portal.vercel.app
+
+# --- INSTRUCTIONS FOR DEPLOYMENT ---
+#
+# 1. Push this file to your GitHub repository root
+# 2. Go to https://dashboard.render.com/
+# 3. Click "New +" → "Web Service"
+# 4. Connect your GitHub repository
+# 5. Render will auto-detect this file
+# 6. Click "Create Web Service"
+#
+# 7. After creation, add environment variables in Dashboard:
+#    Settings → Environment → Add Environment Variable
+#
+#    MONGODB_URI: mongodb+srv://user:password@cluster.mongodb.net/loyalcoin
+#    REDIS_URL: redis://default:password@redis-xxxxx.upstash.io:6379
+#    VAULT_ADDR: https://your-vault-url:8200
+#    VAULT_TOKEN: your-vault-root-token
+#    BLOCKFROST_PROJECT_ID: preprodXXXXXXXXXXXXXXXX
+#    GOVERNANCE_WALLET_ADDRESS: addr_test1...
+#    ADMIN_EMAIL: admin@yourdomain.com
+#
+# 8. Add Secret Files (for JWT keys):
+#    Settings → Secret Files → Add Secret File
+#    - File: /etc/secrets/jwt_private.pem
+#      Content: [paste RSA private key]
+#    - File: /etc/secrets/jwt_public.pem
+#      Content: [paste RSA public key]
+#
+#    Generate keys locally:
+#      openssl genrsa -out jwt_private.pem 2048
+#      openssl rsa -in jwt_private.pem -pubout -out jwt_public.pem
+#
+# 9. Manual Deploy or wait for auto-deploy on git push
+#
+# 10. Your API will be live at: https://loyalcoin-api.onrender.com
+#
+# --- NOTES ---
+# - Free tier: Spins down after 15min inactivity (slow cold starts)
+# - Upgrade to Starter ($7/mo) for always-on service
+# - Check logs in Render Dashboard → Logs tab
+# - Update ALLOWED_ORIGINS after deploying Vercel frontends
