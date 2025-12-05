@@ -4,10 +4,26 @@ backend/keys/*.pem
 backend/tmp/
 
 # Frontend
+merchant-portal/node_modules/
+merchant-portal/.next/
+merchant-portal/out/
+merchant-portal/.env.local
+merchant-portal/.env.production
 
+admin-dashboard/node_modules/
+admin-dashboard/.next/
+admin-dashboard/out/
+admin-dashboard/.env.local
 
 # Mobile
-
+customer-app/.dart_tool/
+customer-app/.flutter-plugins
+customer-app/.flutter-plugins-dependencies
+customer-app/.packages
+customer-app/build/
+customer-app/ios/Pods/
+customer-app/ios/.symlinks/
+customer-app/.env
 
 # IDE
 .vscode/
