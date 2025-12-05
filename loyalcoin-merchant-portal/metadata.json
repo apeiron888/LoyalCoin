@@ -1,0 +1,7 @@
+{
+  "name": "LoyalCoin Merchant Portal",
+  "description": "A comprehensive portal for merchants to manage loyalty tokens, issue rewards, and handle settlements.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

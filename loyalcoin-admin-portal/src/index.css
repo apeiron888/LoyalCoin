@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-gold: #D4AF37;
+  --color-gold-light: #F4D03F;
+  --color-gold-dark: #B8860B;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+body.light {
+  background-color: #f8fafc;
+}
+
+body.dark {
+  background-color: #0f172a;
+}
+
+/* Custom gold gradient */
+.bg-gold-gradient {
+  background: linear-gradient(135deg, #D4AF37 0%, #F4D03F 50%, #D4AF37 100%);
+}
+
+.text-gold {
+  color: #D4AF37;
+}
+
+.bg-gold {
+  background-color: #D4AF37;
+}
+
+.border-gold {
+  border-color: #D4AF37;
+}

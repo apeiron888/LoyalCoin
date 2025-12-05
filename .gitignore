@@ -3,27 +3,25 @@ backend/.env
 backend/keys/*.pem
 backend/tmp/
 
-# Frontend
-merchant-portal/node_modules/
-merchant-portal/.next/
-merchant-portal/out/
-merchant-portal/.env.local
-merchant-portal/.env.production
+# Node modules (all portals)
+**/node_modules/
+node_modules/
 
-admin-dashboard/node_modules/
-admin-dashboard/.next/
-admin-dashboard/out/
-admin-dashboard/.env.local
+# Build outputs (all portals)
+**/dist/
+dist/
+**/out/
+out/
+**/.next/
+.next/
 
-# Mobile
-customer-app/.dart_tool/
-customer-app/.flutter-plugins
-customer-app/.flutter-plugins-dependencies
-customer-app/.packages
-customer-app/build/
-customer-app/ios/Pods/
-customer-app/ios/.symlinks/
-customer-app/.env
+# Environment files
+**/.env
+**/.env.local
+**/.env.production
+.env
+.env.local
+.env.production
 
 # IDE
 .vscode/

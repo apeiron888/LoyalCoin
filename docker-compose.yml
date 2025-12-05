@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  # MongoDB
+  mongodb:
+    image: mongo:7.0
+    container_name: loyalcoin_mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: loyalcoin_dev
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - loyalcoin
+
+  # Redis (for rate limiting & queue)
+  redis:
+    image: redis:7-alpine
+    container_name: loyalcoin_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - loyalcoin
+
+  # HashiCorp Vault (dev mode - NOT for production)
+  vault:
+    image: hashicorp/vault:latest
+    container_name: loyalcoin_vault
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: dev-root-token
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - loyalcoin
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: loyalcoin_backend
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    environment:
+      ENV: development
+      MONGODB_URI: mongodb://admin:password123@mongodb:27017
+      VAULT_ADDR: http://vault:8200
+      VAULT_TOKEN: dev-root-token
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - mongodb
+      - redis
+      - vault
+    networks:
+      - loyalcoin
+    volumes:
+      - ./backend:/app
+    command: go run cmd/auth-service/main.go
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: loyalcoin_prometheus
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./ops/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - loyalcoin
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: loyalcoin_grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./ops/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    depends_on:
+      - prometheus
+    networks:
+      - loyalcoin
+
+networks:
+  loyalcoin:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+  prometheus_data:
+  grafana_data:
