@@ -105,9 +105,19 @@ func (v *VaultClient) WrapDEK(dek []byte) (string, error) {
 
 // UnwrapDEK unwraps a DEK using Vault's transit decryption or fallback decryption
 func (v *VaultClient) UnwrapDEK(ciphertext string) ([]byte, error) {
-	// Use fallback decryption if Vault is disabled or if ciphertext is fallback format
-	if !v.useVault || v.fallbackKey != nil || strings.HasPrefix(ciphertext, "fb:") {
+	// Check if this is a Vault-encrypted DEK (has vault: prefix)
+	isVaultEncrypted := strings.HasPrefix(ciphertext, "vault:")
+
+	// Use fallback decryption if:
+	// 1. ciphertext starts with "fb:" OR
+	// 2. ciphertext looks like fallback (doesn't have vault: prefix) AND fallback key is available
+	if strings.HasPrefix(ciphertext, "fb:") || (!isVaultEncrypted && v.fallbackKey != nil) {
 		return v.unwrapDEKFallback(ciphertext)
+	}
+
+	// If it's Vault encrypted but Vault is disabled, we can't decrypt
+	if isVaultEncrypted && !v.useVault {
+		return nil, fmt.Errorf("ciphertext requires Vault but Vault is disabled/unreachable")
 	}
 
 	payload := map[string]interface{}{

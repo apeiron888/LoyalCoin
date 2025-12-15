@@ -32,6 +32,18 @@ func main() {
 		"env": cfg.Env,
 	})
 
+	// Check for keys in environment variables (for persistent keys on ephemeral FS)
+	if envPrivKey := os.Getenv("JWT_PRIVATE_KEY"); envPrivKey != "" {
+		if err := os.WriteFile(cfg.JWTPrivateKeyPath, []byte(envPrivKey), 0600); err != nil {
+			logger.Error("Failed to write private key from env", err, nil)
+		}
+	}
+	if envPubKey := os.Getenv("JWT_PUBLIC_KEY"); envPubKey != "" {
+		if err := os.WriteFile(cfg.JWTPublicKeyPath, []byte(envPubKey), 0644); err != nil {
+			logger.Error("Failed to write public key from env", err, nil)
+		}
+	}
+
 	// Generate JWT keys if they don't exist
 	if _, err := os.Stat(cfg.JWTPrivateKeyPath); os.IsNotExist(err) {
 		logger.Info("Generating new JWT RSA keys", nil)
