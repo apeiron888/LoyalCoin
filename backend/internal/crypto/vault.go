@@ -27,7 +27,8 @@ type VaultClient struct {
 
 func NewVaultClient(addr, token, transitKey string) *VaultClient {
 	// Check if Vault is disabled
-	useVault := addr != "" && addr != "disabled" && !strings.HasPrefix(addr, "http://localhost")
+	// Allow localhost for dev/testing environments
+	useVault := addr != "" && addr != "disabled"
 
 	// Get fallback encryption key from environment
 	var fallbackKey []byte
@@ -36,6 +37,12 @@ func NewVaultClient(addr, token, transitKey string) *VaultClient {
 		if err == nil && len(decodedKey) == 32 {
 			fallbackKey = decodedKey
 		}
+	}
+
+	if useVault {
+		fmt.Printf("Vault enabled with address: %s\n", addr)
+	} else {
+		fmt.Println("Vault disabled or not configured")
 	}
 
 	return &VaultClient{
